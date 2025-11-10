@@ -98,7 +98,8 @@
       "react-arborist@3.4.0": "patches/react-arborist@3.4.0.patch"
     },
     "overrides": {
-      "jsdom": "25.0.1"
+      "jsdom": "25.0.1",
+      "ms": "3.0.0-canary.1"
     },
     "neverBuiltDependencies": []
   }
