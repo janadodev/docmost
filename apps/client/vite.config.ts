@@ -40,6 +40,28 @@ export default defineConfig(({ mode }) => {
         "@": "/src",
       },
     },
+    // Настройки для оптимизации зависимостей в dev режиме
+    optimizeDeps: {
+      include: [
+        "@emoji-mart/react",
+        "@emoji-mart/data",
+      ],
+      // Принудительно предварительно обрабатываем эти модули
+      force: false,
+    },
+    // Настройки для production build
+    build: {
+      rollupOptions: {
+        output: {
+          // Создаем отдельный chunk для emoji-mart библиотек
+          manualChunks: (id) => {
+            if (id.includes("@emoji-mart/react") || id.includes("@emoji-mart/data")) {
+              return "emoji-mart";
+            }
+          },
+        },
+      },
+    },
     server: {
       proxy: {
         "/api": {
