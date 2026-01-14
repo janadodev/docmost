@@ -1,0 +1,50 @@
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'build'
+      - '-t'
+      - 'europe-west1-docker.pkg.dev/$PROJECT_ID/docmost-repo/docmost:$SHORT_SHA'
+      - '-t'
+      - 'europe-west1-docker.pkg.dev/$PROJECT_ID/docmost-repo/docmost:latest'
+      - '.'
+  
+  # Push the container image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '--all-tags'
+      - 'europe-west1-docker.pkg.dev/$PROJECT_ID/docmost-repo/docmost'
+
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'docmost'
+      - '--image'
+      - 'europe-west1-docker.pkg.dev/$PROJECT_ID/docmost-repo/docmost:$SHORT_SHA'
+      - '--region'
+      - 'europe-west1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--vpc-connector'
+      - 'docmost-vpc-connector'
+      - '--vpc-egress'
+      - 'all-traffic'
+      - '--add-cloudsql-instances'
+      - 'docmost-484110:europe-west1:docmost-2'
+      - '--set-env-vars'
+      - 'NODE_ENV=production,PORT=3000'
+
+images:
+  - 'europe-west1-docker.pkg.dev/$PROJECT_ID/docmost-repo/docmost:$SHORT_SHA'
+  - 'europe-west1-docker.pkg.dev/$PROJECT_ID/docmost-repo/docmost:latest'
+
+options:
+  machineType: 'E2_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: '1800s'

@@ -1,0 +1,106 @@
+TIMESTAMP                    SEVERITY  TEXT_PAYLOAD
+2026-01-13T17:52:18.347196Z  ERROR
+2026-01-13T17:52:18.281210Z  ERROR
+2026-01-13T17:52:18.112858Z  ERROR     Default STARTUP TCP probe failed 1 time consecutively for container "docmost-1" on port 8080. The instance was not started.
+                                       Connection failed with status DEADLINE_EXCEEDED.
+2026-01-13T17:52:17.485635Z            }
+2026-01-13T17:52:17.485633Z              syscall: 'connect'
+2026-01-13T17:52:17.485629Z              code: 'ETIMEDOUT',
+2026-01-13T17:52:17.485626Z              errorno: 'ETIMEDOUT',
+2026-01-13T17:52:17.485620Z  ERROR     Error: connect ETIMEDOUT
+                                           at Socket.<anonymous> (/app/node_modules/.pnpm/ioredis@5.8.2/node_modules/ioredis/built/Redis.js:171:41)
+                                           at Object.onceWrapper (node:events:633:28)
+                                           at Socket.emit (node:events:519:28)
+                                           at Socket._onTimeout (node:net:604:8)
+                                           at listOnTimeout (node:internal/timers:588:17)
+                                           at process.processTimers (node:internal/timers:523:7) {
+2026-01-13T17:52:17.485199Z            }
+2026-01-13T17:52:17.485196Z              syscall: 'connect'
+2026-01-13T17:52:17.485195Z              code: 'ETIMEDOUT',
+2026-01-13T17:52:17.485192Z              errorno: 'ETIMEDOUT',
+2026-01-13T17:52:17.485190Z  ERROR     Error: connect ETIMEDOUT
+                                           at Socket.<anonymous> (/app/node_modules/.pnpm/ioredis@5.8.2/node_modules/ioredis/built/Redis.js:171:41)
+                                           at Object.onceWrapper (node:events:633:28)
+                                           at Socket.emit (node:events:519:28)
+                                           at Socket._onTimeout (node:net:604:8)
+                                           at listOnTimeout (node:internal/timers:588:17)
+                                           at process.processTimers (node:internal/timers:523:7) {
+2026-01-13T17:52:17.485018Z            }
+2026-01-13T17:52:17.485016Z              syscall: 'connect'
+2026-01-13T17:52:17.485015Z              code: 'ETIMEDOUT',
+2026-01-13T17:52:17.485013Z              errorno: 'ETIMEDOUT',
+2026-01-13T17:52:17.485011Z  ERROR     Error: connect ETIMEDOUT
+                                           at Socket.<anonymous> (/app/node_modules/.pnpm/ioredis@5.8.2/node_modules/ioredis/built/Redis.js:171:41)
+                                           at Object.onceWrapper (node:events:633:28)
+                                           at Socket.emit (node:events:519:28)
+                                           at Socket._onTimeout (node:net:604:8)
+                                           at listOnTimeout (node:internal/timers:588:17)
+                                           at process.processTimers (node:internal/timers:523:7) {
+2026-01-13T17:52:17.484834Z            }
+2026-01-13T17:52:17.484832Z              syscall: 'connect'
+2026-01-13T17:52:17.484830Z              code: 'ETIMEDOUT',
+2026-01-13T17:52:17.484828Z              errorno: 'ETIMEDOUT',
+2026-01-13T17:52:17.484826Z  ERROR     Error: connect ETIMEDOUT
+                                           at Socket.<anonymous> (/app/node_modules/.pnpm/ioredis@5.8.2/node_modules/ioredis/built/Redis.js:171:41)
+                                           at Object.onceWrapper (node:events:633:28)
+                                           at Socket.emit (node:events:519:28)
+                                           at Socket._onTimeout (node:net:604:8)
+                                           at listOnTimeout (node:internal/timers:588:17)
+                                           at process.processTimers (node:internal/timers:523:7) {
+2026-01-13T17:52:17.484663Z            }
+2026-01-13T17:52:17.484661Z              syscall: 'connect'
+2026-01-13T17:52:17.484660Z              code: 'ETIMEDOUT',
+2026-01-13T17:52:17.484658Z              errorno: 'ETIMEDOUT',
+2026-01-13T17:52:17.484656Z  ERROR     Error: connect ETIMEDOUT
+                                           at Socket.<anonymous> (/app/node_modules/.pnpm/ioredis@5.8.2/node_modules/ioredis/built/Redis.js:171:41)
+                                           at Object.onceWrapper (node:events:633:28)
+                                           at Socket.emit (node:events:519:28)
+                                           at Socket._onTimeout (node:net:604:8)
+                                           at listOnTimeout (node:internal/timers:588:17)
+                                           at process.processTimers (node:internal/timers:523:7) {
+2026-01-13T17:52:17.484500Z            }
+2026-01-13T17:52:17.484498Z              syscall: 'connect'
+2026-01-13T17:52:17.484496Z              code: 'ETIMEDOUT',
+2026-01-13T17:52:17.484493Z              errorno: 'ETIMEDOUT',
+2026-01-13T17:52:17.484491Z  ERROR     Error: connect ETIMEDOUT
+                                           at Socket.<anonymous> (/app/node_modules/.pnpm/ioredis@5.8.2/node_modules/ioredis/built/Redis.js:171:41)
+                                           at Object.onceWrapper (node:events:633:28)
+                                           at Socket.emit (node:events:519:28)
+                                           at Socket._onTimeout (node:net:604:8)
+                                           at listOnTimeout (node:internal/timers:588:17)
+                                           at process.processTimers (node:internal/timers:523:7) {
+2026-01-13T17:52:17.484354Z            }
+2026-01-13T17:52:17.484351Z              syscall: 'connect'
+2026-01-13T17:52:17.484349Z              code: 'ETIMEDOUT',
+2026-01-13T17:52:17.484347Z              errorno: 'ETIMEDOUT',
+2026-01-13T17:52:17.484344Z  ERROR     Error: connect ETIMEDOUT
+                                           at Socket.<anonymous> (/app/node_modules/.pnpm/ioredis@5.8.2/node_modules/ioredis/built/Redis.js:171:41)
+                                           at Object.onceWrapper (node:events:633:28)
+                                           at Socket.emit (node:events:519:28)
+                                           at Socket._onTimeout (node:net:604:8)
+                                           at listOnTimeout (node:internal/timers:588:17)
+                                           at process.processTimers (node:internal/timers:523:7) {
+2026-01-13T17:52:17.484055Z            }
+2026-01-13T17:52:17.484053Z              syscall: 'connect'
+2026-01-13T17:52:17.484050Z              code: 'ETIMEDOUT',
+2026-01-13T17:52:17.484047Z              errorno: 'ETIMEDOUT',
+2026-01-13T17:52:17.484038Z  ERROR     Error: connect ETIMEDOUT
+                                           at Socket.<anonymous> (/app/node_modules/.pnpm/ioredis@5.8.2/node_modules/ioredis/built/Redis.js:171:41)
+                                           at Object.onceWrapper (node:events:633:28)
+                                           at Socket.emit (node:events:519:28)
+                                           at Socket._onTimeout (node:net:604:8)
+                                           at listOnTimeout (node:internal/timers:588:17)
+                                           at process.processTimers (node:internal/timers:523:7) {
+2026-01-13T17:52:17.405688Z            }
+2026-01-13T17:52:17.405684Z              syscall: 'connect'
+2026-01-13T17:52:17.405680Z              code: 'ETIMEDOUT',
+2026-01-13T17:52:17.405675Z              errorno: 'ETIMEDOUT',
+2026-01-13T17:52:17.405669Z  ERROR     Error: connect ETIMEDOUT
+                                           at Socket.<anonymous> (/app/node_modules/.pnpm/ioredis@5.8.2/node_modules/ioredis/built/Redis.js:171:41)
+                                           at Object.onceWrapper (node:events:633:28)
+                                           at Socket.emit (node:events:519:28)
+                                           at Socket._onTimeout (node:net:604:8)
+                                           at listOnTimeout (node:internal/timers:588:17)
+                                           at process.processTimers (node:internal/timers:523:7) {
+2026-01-13T17:52:17.405369Z            }
+2026-01-13T17:52:17.405365Z              syscall: 'connect'

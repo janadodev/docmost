@@ -1,0 +1,70 @@
+# # Backend URL для Vite proxy
+# APP_URL=http://localhost:3000
+
+# # Опциональные переменные
+# FILE_UPLOAD_SIZE_LIMIT=50mb
+# FILE_IMPORT_SIZE_LIMIT=200mb
+# DRAWIO_URL=https://embed.diagrams.net
+
+
+
+# ============================================
+# Docmost Environment Variables для Google Cloud
+# ============================================
+
+# ============================================
+# Database (PostgreSQL Cloud SQL)
+# ============================================
+# ВАЖНО: Замените YOUR_POSTGRES_PASSWORD на ваш реальный пароль от PostgreSQL
+DATABASE_URL=postgresql://postgres:YOUR_POSTGRES_PASSWORD@34.22.233.20:5432/docmost
+
+# ============================================
+# Redis (Memorystore)
+# ============================================
+REDIS_URL=redis://:510cbc91-f860-4843-8385-f43959611afd@10.151.36.35:6379
+
+# ============================================
+# Application Settings
+# ============================================
+# ВАЖНО: Замените на URL вашего приложения после развертывания
+# Например: https://docmost-xxxxx.run.app или ваш домен
+APP_URL=https://your-app-url.com
+
+# ВАЖНО: Сгенерируйте длинный случайный секретный ключ (минимум 32 символа)
+# Можно сгенерировать командой: openssl rand -base64 32
+APP_SECRET=e2UkUbQd4FY2xmt51tbyu0KE0d42Kjim3QQO1Nm2Eco=
+
+# ============================================
+# Storage (Google Cloud Storage через S3 API)
+# ============================================
+STORAGE_DRIVER=s3
+AWS_S3_REGION=europe-west1
+AWS_S3_BUCKET=ja-docmost
+AWS_S3_ENDPOINT=https://storage.googleapis.com
+AWS_S3_ACCESS_KEY_ID=GOOG1EDP7CHIX0A22KTXNQQXSXDIYSWPZQLEXKYLMRIDR4M2610LBNFSM02EH
+AWS_S3_SECRET_ACCESS_KEY=0TlcnjzFFakuHs8abrx/LKaKR5JT0M6tpN0tgl0s
+AWS_S3_FORCE_PATH_STYLE=false
+
+# ============================================
+# Optional Settings
+# ============================================
+
+# Mail (опционально, для отправки email)
+# MAIL_DRIVER=smtp
+# SMTP_HOST=smtp.gmail.com
+# SMTP_PORT=587
+# SMTP_SECURE=true
+# SMTP_USERNAME=your-email@gmail.com
+# SMTP_PASSWORD=your-app-password
+
+# Search (по умолчанию используется database, можно настроить typesense)
+# SEARCH_DRIVER=database
+
+# Collaboration (опционально, если нужен отдельный сервер для collaboration)
+# COLLAB_URL=http://localhost:3001
+
+# Node Environment
+NODE_ENV=production
+
+# Port (для Cloud Run не нужен - устанавливается автоматически)
+# PORT=3000  # Cloud Run устанавливает PORT автоматически, не нужно указывать
