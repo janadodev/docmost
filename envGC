@@ -16,12 +16,14 @@
 # Database (PostgreSQL Cloud SQL)
 # ============================================
 # ВАЖНО: Замените YOUR_POSTGRES_PASSWORD на ваш реальный пароль от PostgreSQL
-DATABASE_URL=postgresql://postgres:YOUR_POSTGRES_PASSWORD@34.22.233.20:5432/docmost
+# DATABASE_URL=postgresql://postgres:ab1x\&6$JJ8yqdBS@34.22.233.20:5432/docmost
+# DATABASE_URL=postgresql://postgres:ab1x\&6$JJ8yqdBS@/docmost?host=/cloudsql/docmost-484110:europe-west1:docmost-2
+DATABASE_URL=postgresql://postgres:ab1x%5C%26%246JJ8yqdBS@localhost/docmost
 
 # ============================================
 # Redis (Memorystore)
 # ============================================
-REDIS_URL=redis://:510cbc91-f860-4843-8385-f43959611afd@10.151.36.35:6379
+REDIS_URL=redis://:39e4cd52-2879-4a68-8e0c-39c2a6b0abc9@10.227.192.35:6379
 
 # ============================================
 # Application Settings

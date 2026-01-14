@@ -143,12 +143,19 @@ echo "   4. VPC Connector должен быть в статусе READY"
 echo ""
 echo "🔍 ДИАГНОСТИКА ПОДКЛЮЧЕНИЯ К REDIS:"
 echo "   Redis IP: $REDIS_IP"
-echo "   Redis диапазон: 10.151.36.32/29"
+
+# Получаем реальный Redis диапазон из конфигурации
+REDIS_RANGE=$(gcloud redis instances describe $REDIS_INSTANCE --region=$REGION --project=$PROJECT_ID --format="value(reservedIpRange)" 2>/dev/null || echo "")
+if [ -z "$REDIS_RANGE" ]; then
+    REDIS_RANGE="10.151.36.32/29"  # Fallback к старому значению, если не удалось получить
+    echo "   ⚠️ Не удалось получить Redis диапазон из конфигурации, используем значение по умолчанию"
+    echo "   Redis диапазон: $REDIS_RANGE"
+else
+    echo "   Redis диапазон: $REDIS_RANGE"
+fi
+
 echo "   VPC Connector диапазон: 10.8.0.0/28"
 echo "   Проверяем маршрутизацию..."
-
-# Получаем Redis диапазон из конфигурации
-REDIS_RANGE="10.151.36.32/29"
 ROUTE_EXISTS=$(gcloud compute routes list --filter="network:default AND destRange:$REDIS_RANGE" --format="value(name)" 2>/dev/null | head -1 || echo "")
 if [ ! -z "$ROUTE_EXISTS" ]; then
     ROUTE_DETAILS=$(gcloud compute routes describe $ROUTE_EXISTS --format="value(destRange,nextHopIp,priority)" 2>/dev/null || echo "")
@@ -350,40 +357,15 @@ add_env_var() {
 ENV_VARS=""
 add_env_var "NODE_ENV" "production"
 
-# Преобразуем DATABASE_URL для использования Private IP Cloud SQL
-# Если DATABASE_URL содержит localhost, пытаемся получить Private IP Cloud SQL
+# Преобразуем DATABASE_URL для использования Unix socket через Cloud SQL Proxy
+# Это рекомендуемый способ подключения к Cloud SQL из Cloud Run
+# Всегда преобразуем, если DATABASE_URL еще не использует Unix socket
 DB_URL_FOR_CLOUD_RUN="$DATABASE_URL"
-if [[ "$DATABASE_URL" == *"@localhost"* ]] || [[ "$DATABASE_URL" == *"@127.0.0.1"* ]]; then
-    echo "🔍 Пытаемся получить IP адрес Cloud SQL..."
-    
-    # Получаем все IP адреса Cloud SQL
-    CLOUD_SQL_IPS=$(gcloud sql instances describe docmost-2 --format="value(ipAddresses)" --project=$PROJECT_ID 2>/dev/null || echo "")
-    
-    # Ищем Private IP (начинается с 10.)
-    CLOUD_SQL_PRIVATE_IP=$(echo "$CLOUD_SQL_IPS" | grep -oE "10\.[0-9]+\.[0-9]+\.[0-9]+" | head -1 || echo "")
-    
-    # Если Private IP не найден, ищем Public IP
-    if [ -z "$CLOUD_SQL_PRIVATE_IP" ]; then
-        echo "⚠️ Private IP не найден, пытаемся получить Public IP..."
-        CLOUD_SQL_PUBLIC_IP=$(gcloud sql instances describe docmost-2 --format="get(ipAddresses[0].ipAddress)" --project=$PROJECT_ID 2>/dev/null | grep -vE "^10\." | head -1 || echo "")
-        
-        if [ ! -z "$CLOUD_SQL_PUBLIC_IP" ]; then
-            echo "✅ Найден Public IP Cloud SQL: $CLOUD_SQL_PUBLIC_IP"
-            CLOUD_SQL_IP="$CLOUD_SQL_PUBLIC_IP"
-            USE_PUBLIC_IP=true
-        else
-            echo "❌ ОШИБКА: Не удалось найти ни Private, ни Public IP Cloud SQL!"
-            echo "   Проверьте, что Cloud SQL инстанс существует и имеет IP адрес"
-            exit 1
-        fi
-    else
-        echo "✅ Найден Private IP Cloud SQL: $CLOUD_SQL_PRIVATE_IP"
-        CLOUD_SQL_IP="$CLOUD_SQL_PRIVATE_IP"
-        USE_PUBLIC_IP=false
-    fi
+if [[ "$DATABASE_URL" != *"/cloudsql/"* ]]; then
+    echo "🔍 Преобразуем DATABASE_URL для использования Unix socket через Cloud SQL Proxy..."
     
     # Извлекаем части из connection string
-    # Формат: postgresql://user:pass@host/dbname
+    # Формат: postgresql://user:pass@host/dbname или postgresql://user:pass@host:port/dbname
     if [[ "$DATABASE_URL" =~ postgresql://([^:]+):([^@]+)@([^/]+)/(.+) ]]; then
         DB_USER="${BASH_REMATCH[1]}"
         DB_PASS="${BASH_REMATCH[2]}"
@@ -392,22 +374,27 @@ if [[ "$DATABASE_URL" == *"@localhost"* ]] || [[ "$DATABASE_URL" == *"@127.0.0.1
         # Удаляем query параметры из DB_NAME, если есть
         DB_NAME="${DB_NAME%%\?*}"
         
-        # Формируем новый URL с IP адресом
-        DB_URL_FOR_CLOUD_RUN="postgresql://${DB_USER}:${DB_PASS}@${CLOUD_SQL_IP}:5432/${DB_NAME}"
+        # URL-кодируем пароль для безопасной передачи в connection string
+        # Используем printf для экранирования специальных символов в пароле
+        DB_PASS_ENCODED=$(python3 -c "import urllib.parse, sys; sys.stdout.write(urllib.parse.quote(sys.stdin.read().strip(), safe=''))" <<< "$DB_PASS")
         
-        if [ "$USE_PUBLIC_IP" = true ]; then
-            echo "✅ Преобразовали DATABASE_URL для использования Public IP: $CLOUD_SQL_IP"
-            echo "   ⚠️ ВНИМАНИЕ: Используется Public IP. Убедитесь, что:"
-            echo "   1. Cloud SQL разрешает подключения с вашего IP"
-            echo "   2. Firewall правила настроены правильно"
-        else
-            echo "✅ Преобразовали DATABASE_URL для использования Private IP: $CLOUD_SQL_IP"
-        fi
+        # Формируем новый URL с Unix socket через Cloud SQL Proxy
+        # Формат: postgresql://user:password@localhost/database?host=/cloudsql/PROJECT_ID:REGION:INSTANCE_NAME
+        # Используем localhost в hostname для прохождения валидации @IsUrl, но реальное подключение идет через host в query
+        CLOUD_SQL_SOCKET_PATH="/cloudsql/${CLOUD_SQL_INSTANCE}"
+        DB_URL_FOR_CLOUD_RUN="postgresql://${DB_USER}:${DB_PASS_ENCODED}@localhost/${DB_NAME}?host=${CLOUD_SQL_SOCKET_PATH}"
+        
+        echo "✅ Преобразовали DATABASE_URL для использования Unix socket через Cloud SQL Proxy"
+        echo "   Socket path: ${CLOUD_SQL_SOCKET_PATH}"
+        echo "   Исходный URL содержал IP/host, заменен на Unix socket"
     else
         echo "❌ ОШИБКА: Не удалось распарсить DATABASE_URL!"
         echo "   Проверьте формат DATABASE_URL в .env файле"
+        echo "   Текущий DATABASE_URL: $DATABASE_URL"
         exit 1
     fi
+else
+    echo "✅ DATABASE_URL уже использует Unix socket через Cloud SQL Proxy"
 fi
 
 add_env_var "DATABASE_URL" "$DB_URL_FOR_CLOUD_RUN"
@@ -462,7 +449,7 @@ gcloud run deploy $SERVICE_NAME \
     --cpu-boost \
     --max-instances 2 \
     --min-instances 1 \
-    --startup-probe=initialDelaySeconds=60,periodSeconds=10,failureThreshold=30,tcpSocket.port=8080 \
+    --startup-probe=initialDelaySeconds=120,periodSeconds=15,failureThreshold=60,tcpSocket.port=8080 \
     --quiet
 
 # Получение URL сервиса
