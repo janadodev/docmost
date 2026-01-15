@@ -135,8 +135,8 @@ echo ""
 
 # Сборка Docker образа
 if [ "$SKIP_BUILD" = false ]; then
-  echo "🔨 Сборка Docker образа..."
-  docker build -t ${FULL_IMAGE_NAME}:${TAG} .
+  echo "🔨 Сборка Docker образа для платформы linux/amd64..."
+  docker build --platform linux/amd64 -t ${FULL_IMAGE_NAME}:${TAG} .
   
   if [ $? -ne 0 ]; then
     echo "❌ Ошибка при сборке Docker образа"

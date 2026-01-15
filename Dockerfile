@@ -1,4 +1,5 @@
-FROM node:22-slim AS base
+# Указываем платформу явно для Cloud Run (linux/amd64)
+FROM --platform=linux/amd64 node:22-slim AS base
 LABEL org.opencontainers.image.source="https://github.com/docmost/docmost"
 
 FROM base AS builder
