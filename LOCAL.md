@@ -51,12 +51,34 @@ STORAGE_DRIVER=local
 
 # Поиск (database для локальной разработки, typesense для продакшена)
 SEARCH_DRIVER=database
+
+# Настройка отправки email
+# По умолчанию используется 'log' - email только логируется, но не отправляется
+# Для реальной отправки email используйте 'smtp' или 'postmark'
+MAIL_DRIVER=log
+
+# Для SMTP (если MAIL_DRIVER=smtp):
+# MAIL_DRIVER=smtp
+# SMTP_HOST=smtp.gmail.com
+# SMTP_PORT=587
+# SMTP_SECURE=false
+# SMTP_USERNAME=your-email@gmail.com
+# SMTP_PASSWORD=your-app-password
+# MAIL_FROM_ADDRESS=your-email@gmail.com
+# MAIL_FROM_NAME=Docmost
+
+# Для Postmark (если MAIL_DRIVER=postmark):
+# MAIL_DRIVER=postmark
+# POSTMARK_TOKEN=your-postmark-token
+# MAIL_FROM_ADDRESS=your-verified-email@example.com
+# MAIL_FROM_NAME=Docmost
 ```
 
 **Важно:**
 - Если вы используете Docker Compose для БД, пароль должен совпадать с паролем из `docker-compose.yml`
 - `APP_SECRET` должен быть не менее 32 символов и не равен `REPLACE_WITH_LONG_SECRET`
 - Для генерации нового секретного ключа: `openssl rand -base64 32 | tr -d '\n' | head -c 64`
+- **По умолчанию `MAIL_DRIVER=log`** - email только логируется в консоль, но не отправляется. Для реальной отправки email настройте SMTP или Postmark
 
 ### 4. Создание базы данных (если еще не создана)
 
@@ -314,6 +336,71 @@ docker exec docmost-redis-1 redis-cli ping
 ```bash
 docker exec docmost-db-1 psql -U docmost -d docmost -c "SELECT email, name, role FROM users;"
 ```
+
+## Настройка отправки email
+
+### Проблема: Email не отправляется, только логируется
+
+По умолчанию используется `MAIL_DRIVER=log`, который только логирует email в консоль, но не отправляет его. Для реальной отправки email нужно настроить SMTP или Postmark.
+
+#### Вариант 1: Использование SMTP (Gmail, Outlook и др.)
+
+Добавьте в файл `.env`:
+
+```env
+MAIL_DRIVER=smtp
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USERNAME=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+MAIL_FROM_ADDRESS=your-email@gmail.com
+MAIL_FROM_NAME=Docmost
+```
+
+**Для Gmail:**
+- Используйте пароль приложения, а не обычный пароль
+- Создайте пароль приложения: [Google Account Settings](https://myaccount.google.com/apppasswords)
+- `SMTP_PORT=587` для TLS или `SMTP_PORT=465` для SSL (тогда `SMTP_SECURE=true`)
+
+**Для других SMTP серверов:**
+- Укажите соответствующий `SMTP_HOST` и `SMTP_PORT`
+- `SMTP_SECURE=true` для SSL (порт 465), `false` для TLS (порт 587)
+- `SMTP_IGNORETLS=true` если нужно игнорировать ошибки TLS
+
+#### Вариант 2: Использование Postmark
+
+Добавьте в файл `.env`:
+
+```env
+MAIL_DRIVER=postmark
+POSTMARK_TOKEN=your-postmark-server-token
+MAIL_FROM_ADDRESS=your-verified-email@example.com
+MAIL_FROM_NAME=Docmost
+```
+
+#### Вариант 3: Использование MailHog для локальной разработки
+
+MailHog - это локальный SMTP сервер для тестирования email.
+
+1. Запустите MailHog через Docker:
+```bash
+docker run -d -p 1025:1025 -p 8025:8025 mailhog/mailhog
+```
+
+2. Добавьте в файл `.env`:
+```env
+MAIL_DRIVER=smtp
+SMTP_HOST=localhost
+SMTP_PORT=1025
+SMTP_SECURE=false
+MAIL_FROM_ADDRESS=test@docmost.local
+MAIL_FROM_NAME=Docmost
+```
+
+3. Откройте веб-интерфейс MailHog: http://localhost:8025
+
+После изменения настроек email перезапустите сервер.
 
 ## Решение проблем
 
