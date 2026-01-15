@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import ms, { StringValue } from 'ms';
+import * as msModule from 'ms';
+const ms = (msModule as any).default || msModule;
 
 @Injectable()
 export class EnvironmentService {
@@ -68,9 +69,11 @@ export class EnvironmentService {
     const expiresInStr = this.getJwtTokenExpiresIn();
     let msUntilExpiry: number;
     try {
-      msUntilExpiry = ms(expiresInStr as StringValue);
+      const msFunc = typeof ms === 'function' ? ms : (ms as any).default || ms;
+      msUntilExpiry = msFunc(expiresInStr);
     } catch (err) {
-      msUntilExpiry = ms('90d');
+      const msFunc = typeof ms === 'function' ? ms : (ms as any).default || ms;
+      msUntilExpiry = msFunc('90d');
     }
     return new Date(Date.now() + msUntilExpiry);
   }
