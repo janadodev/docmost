@@ -290,7 +290,7 @@ export class WorkspaceInvitationService {
 
       await this.mailService.sendToQueue({
         to: invitedByUser.email,
-        subject: `${newUser.name} has accepted your Docmost invite`,
+        subject: `${newUser.name} has accepted your Janado Wiki invite`,
         template: emailTemplate,
       });
     }
@@ -391,7 +391,7 @@ export class WorkspaceInvitationService {
 
     await this.mailService.sendToQueue({
       to: inviteeEmail,
-      subject: `${invitedByName} invited you to Docmost`,
+      subject: `${invitedByName} invited you to Janado Wiki`,
       template: emailTemplate,
     });
   }
